@@ -1,15 +1,6 @@
-import discord
 from discord.ext import commands
 from typing import Union
 import asyncio
-
-
-intents = discord.Intents.default() # All intents except presences are enabled
-intents.message_content = True
-intents.messages = True
-intents.members = True
-intents.moderation = True
-
 
 class BotConfig(commands.Cog):
 
