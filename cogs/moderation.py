@@ -1,9 +1,10 @@
 import discord
 from discord.ext import commands
 from discord.ext.commands import UserConverter, UserNotFound, MemberConverter, MemberNotFound
+from cogs.userExistenceCheck import UserExistenceCheck
 
 
-intents = discord.Intents.default() # All intents except presences are enabled
+intents = discord.Intents.default() # All intents except presences, members & message_content are enabled
 intents.message_content = True
 intents.messages = True
 intents.members = True
@@ -17,39 +18,16 @@ class moderatorCommands(commands.Cog):
     @commands.command()
     async def ban(self, ctx, user: str = None):
 
-        if user is None:
-            await ctx.send(f"Incorrect usage!\n"
-                           f"Correct usage: `{self.bot.command_prefix}ban [userID]`")
+        userExistenceChecker = UserExistenceCheck(self.bot)
+        userArgBool = await userExistenceChecker.isUserArgValid(ctx, user)
+
+        if userArgBool is False: # If the user argument is None, not digits or between 15-19 numbers inclusive
             return
 
-
-        elif not user.isdigit():
-            await ctx.send(f"Invalid ID! ID can only contain numbers!\n"
-                           f"`Usage: {self.bot.command_prefix}ban [userID]`")
+        else:
+            await ctx.guild.ban(userArgBool)
+            await ctx.send(f"{userArgBool.mention} `{userArgBool.id}` was banned by {ctx.author.name}!")
             return
-
-        elif len(user) > 19 or len(user) < 15:
-            await ctx.send(f"Invalid ID! ID must between 15 to 19 numbers long inclusive!\n"
-                           f"`Usage: {self.bot.command_prefix}ban [userID]`")
-            return
-
-        try:  # Trying to convert the user into a Member object
-            bannedMember = await MemberConverter().convert(ctx, user)
-
-        except discord.ext.commands.errors.MemberNotFound:  # If the conversion fails i.e. the user being banned is not on the server
-            try:  # Try to convert the user into a User object to see if the user exists in Discord
-                bannedMember = await UserConverter().convert(ctx, user)
-
-            except discord.ext.commands.errors.UserNotFound:
-                await ctx.send(f"Invalid ID! User with ID: `{user}` does not exist!\n"
-                               f"`Usage: {self.bot.command_prefix}ban [userID]`")
-                return
-
-            await ctx.send(f"Ban failed! {bannedMember.mention} `{bannedMember.id}` is not a member of the server!")
-            return
-
-        await ctx.guild.ban(bannedMember)
-        await ctx.send(f"{bannedMember.mention} `{bannedMember.id}` was banned by {ctx.author.name}!")
 
     @commands.command()
     async def unban(self, ctx, user: str = None):
