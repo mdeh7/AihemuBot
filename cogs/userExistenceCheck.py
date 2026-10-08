@@ -22,13 +22,11 @@ class UserExistenceCheck(commands.Cog):
         except discord.ext.commands.errors.MemberNotFound:  # If the conversion fails i.e. the user being banned is not on the server
             try:  # Try to convert the user into a User object to see if the user exists in Discord
                 userObject = await UserConverter().convert(ctx, user)
+                return userObject
 
             except discord.ext.commands.errors.UserNotFound:
                 await ctx.send(f"Invalid ID! User with ID: `{user}` does not exist!")
                 return False
-
-            await ctx.send(f"{userObject.mention} `{userObject.id}` is not a member of the server!")
-            return False
 
     async def isUserArgValid(self, ctx, user):
         if user is None:
