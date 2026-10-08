@@ -1,6 +1,5 @@
 import discord
 from discord.ext import commands
-from discord.ext.commands import UserConverter, UserNotFound, MemberConverter, MemberNotFound
 from cogs.userExistenceCheck import UserExistenceCheck
 
 

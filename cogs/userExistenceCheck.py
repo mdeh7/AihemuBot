@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from discord.ext.commands import UserConverter, UserNotFound, MemberConverter, MemberNotFound
+from discord.ext.commands import UserConverter, MemberConverter
 
 intents = discord.Intents.default() # All intents except presences are enabled
 intents.message_content = True
