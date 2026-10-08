@@ -24,7 +24,8 @@ class Aihemu(commands.Bot):
 
     async def on_ready(self):
         print(f'Login as {self.user} successful!')
-        # await self.load_extension("cogs.moderation")
+        await self.load_extension("cogs.userExistenceCheck")
+        await self.load_extension("cogs.moderation")
         await self.load_extension("cogs.botconfig")
 
 
