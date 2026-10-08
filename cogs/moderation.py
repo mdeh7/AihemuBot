@@ -15,7 +15,7 @@ class moderatorCommands(commands.Cog):
         self.bot = bot
 
     @commands.command()
-    async def ban(self, ctx, user: str = None):
+    async def ban(self, ctx, user: str = None, reason: str = "No reason provided"):
 
         userExistenceChecker = UserExistenceCheck(self.bot)
         userArgBool = await userExistenceChecker.isUserArgValid(ctx, user)
@@ -28,8 +28,8 @@ class moderatorCommands(commands.Cog):
             return
 
         else:
-            await ctx.guild.ban(userArgBool)
-            await ctx.send(f"{userArgBool.mention} `{userArgBool.id}` was banned by {ctx.author.name}!")
+            await ctx.guild.ban(user=userArgBool, reason=reason)
+            await ctx.send(f"{userArgBool.mention} `{userArgBool.id}` was banned by {ctx.author.name} for: {reason}!")
             return
 
     @commands.command()
