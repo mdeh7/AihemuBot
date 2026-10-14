@@ -69,6 +69,20 @@ class moderatorCommands(commands.Cog):
             await ctx.send(f"{userArgBool.mention} `{userArgBool.id}` was kicked by {ctx.author.name}!")
             return
 
+    @commands.command() # Forceban bans a user from a server, even if they are not a member
+    async def forceban(self, ctx, user: str = None, reason: str = "No reason provided"):
+
+        userExistenceChecker = UserExistenceCheck(self.bot)
+        isMember, userArgBool = await userExistenceChecker.isUserArgValid(ctx, user)
+
+        if isMember is False:
+            if isinstance(userArgBool, discord.User): # If the user is not a member of the server, they do not get banned
+                await ctx.guild.ban(user=userArgBool, reason=reason)
+                await ctx.send(f"{userArgBool.mention} `{userArgBool.id}` was force-banned by {ctx.author.name} for: {reason}!")
+                return
+            else:
+                return
+
 
 async def setup(bot):
     await bot.add_cog(moderatorCommands(bot))
