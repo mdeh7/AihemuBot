@@ -18,14 +18,14 @@ class moderatorCommands(commands.Cog):
     async def ban(self, ctx, user: str = None, reason: str = "No reason provided"):
 
         userExistenceChecker = UserExistenceCheck(self.bot)
-        userArgBool = await userExistenceChecker.isUserArgValid(ctx, user)
+        isMember, userArgBool = await userExistenceChecker.isUserArgValid(ctx, user)
 
-        if userArgBool is False: # If the user argument is None, not digits or between 15-19 numbers inclusive
-            return
-
-        elif not isinstance(userArgBool, discord.Member): # If the user is not a member of the server, they do not get banned
-            await ctx.send(f"{userArgBool.mention} `{userArgBool.id}` is not a member of the server!")
-            return
+        if isMember is False:
+            if isinstance(userArgBool, discord.User): # If the user is not a member of the server, they do not get banned
+                await ctx.send(f"Ban failed! {userArgBool.mention} `{userArgBool.id}` is not a member of the server!")
+                return
+            else:
+                return
 
         else:
             await ctx.guild.ban(user=userArgBool, reason=reason)
@@ -36,20 +36,38 @@ class moderatorCommands(commands.Cog):
     async def unban(self, ctx, user: str = None):
 
         userExistenceChecker = UserExistenceCheck(self.bot)
-        userArgBool = await userExistenceChecker.isUserArgValid(ctx, user)
+        isMember, userArgBool = await userExistenceChecker.isUserArgValid(ctx, user)
 
-        if userArgBool is False: # If the user argument is None, not digits or between 15-19 numbers inclusive
+        if isMember is False:
+            if not isinstance(userArgBool, discord.User):
+                return
+
+        try:
+            await ctx.guild.unban(userArgBool)
+            await ctx.send(f"{userArgBool.mention} `{userArgBool.id}` was unbanned by {ctx.author.name}!")
             return
 
-        else:
-            try:
-                await ctx.guild.unban(userArgBool)
-                await ctx.send(f"{userArgBool.mention} `{userArgBool.id}` was unbanned by {ctx.author.name}!")
+        except discord.HTTPException:
+            await ctx.send(f"Unban failed! {userArgBool.mention} `{userArgBool.id}` is not banned from the server!")
+            return
+
+    @commands.command()
+    async def kick(self, ctx, user: str = None):
+
+        userExistenceChecker = UserExistenceCheck(self.bot)
+        isMember, userArgBool = await userExistenceChecker.isUserArgValid(ctx, user)
+
+        if isMember is False:
+            if isinstance(userArgBool, discord.User):
+                await ctx.send(f"Kick failed! {userArgBool.mention} `{userArgBool.id}` is not on the server!")
+                return
+            else:
                 return
 
-            except discord.HTTPException:
-                await ctx.send(f"Unban failed! {userArgBool.mention} `{userArgBool.id}` is not banned from the server!")
-                return
+        else:
+            await ctx.guild.kick(userArgBool)
+            await ctx.send(f"{userArgBool.mention} `{userArgBool.id}` was kicked by {ctx.author.name}!")
+            return
 
 
 async def setup(bot):
