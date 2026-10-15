@@ -78,7 +78,7 @@ class moderatorCommands(commands.Cog):
         isMember, userArgBool = await userExistenceChecker.isUserArgValid(ctx, user)
 
         if isMember is False:
-            if isinstance(userArgBool, discord.User): # If the user is not a member of the server, they do not get banned
+            if isinstance(userArgBool, discord.User):
                 await ctx.guild.ban(user=userArgBool, reason=reason)
                 await ctx.send(f"{userArgBool.mention} `{userArgBool.id}` was force-banned by {ctx.author.name} for: {reason}!")
                 return
