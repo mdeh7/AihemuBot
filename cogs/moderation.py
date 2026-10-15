@@ -15,7 +15,7 @@ class moderatorCommands(commands.Cog):
         self.bot = bot
 
     @commands.command()
-    async def ban(self, ctx, user: str = None, reason: str = "No reason provided"):
+    async def ban(self, ctx, user: str = None, *, reason: str = "No reason provided"):
 
         userExistenceChecker = UserExistenceCheck(self.bot)
         isMember, userArgBool = await userExistenceChecker.isUserArgValid(ctx, user)
@@ -28,6 +28,7 @@ class moderatorCommands(commands.Cog):
                 return
 
         else:
+            await userArgBool.send(f"You have been banned from {ctx.guild.name} for: {reason}")
             await ctx.guild.ban(user=userArgBool, reason=reason)
             await ctx.send(f"{userArgBool.mention} `{userArgBool.id}` was banned by {ctx.author.name} for: {reason}!")
             return
@@ -52,7 +53,7 @@ class moderatorCommands(commands.Cog):
             return
 
     @commands.command()
-    async def kick(self, ctx, user: str = None):
+    async def kick(self, ctx, user: str = None, *, reason: str = "No reason provided"):
 
         userExistenceChecker = UserExistenceCheck(self.bot)
         isMember, userArgBool = await userExistenceChecker.isUserArgValid(ctx, user)
@@ -65,7 +66,8 @@ class moderatorCommands(commands.Cog):
                 return
 
         else:
-            await ctx.guild.kick(userArgBool)
+            await userArgBool.send(f"You have been kicked from {ctx.guild.name} for: {reason}")
+            await ctx.guild.kick(user=userArgBool, reason=reason)
             await ctx.send(f"{userArgBool.mention} `{userArgBool.id}` was kicked by {ctx.author.name}!")
             return
 
